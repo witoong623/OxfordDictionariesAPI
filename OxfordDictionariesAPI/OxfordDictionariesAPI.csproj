@@ -2,6 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.1</TargetFramework>
+    <Authors>witoong623</Authors>
+    <Description>Unofficial Oxford Dictionaries API in .NET.</Description>
+    <Company />
+    <Product>OxfordDictionariesAPI</Product>
   </PropertyGroup>
 
   <ItemGroup>
