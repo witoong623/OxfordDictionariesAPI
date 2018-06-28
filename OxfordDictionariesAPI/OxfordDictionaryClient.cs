@@ -29,6 +29,7 @@ namespace OxfordDictionariesAPI
 
         /// <summary>
         /// Retrieve available dictionary entries for a given word and language.
+        /// Return SearchResult of a given word. Return null if not found.
         /// </summary>
         /// <param name="word">A word that want to search.  It should be lowercase and should replace whitespace with underscore</param>
         /// <param name="ct">CancellationToken use for cancel</param>
