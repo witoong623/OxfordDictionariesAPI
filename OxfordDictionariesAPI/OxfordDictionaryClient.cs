@@ -5,6 +5,8 @@ using OxfordDictionariesAPI.Models;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using System.Collections.Generic;
+using OxfordDictionariesAPI.Converters;
 
 namespace OxfordDictionariesAPI
 {
@@ -43,16 +45,65 @@ namespace OxfordDictionariesAPI
 
             word = word.Trim().Replace(" ", "_");
             var searchPath = $"entries/{language}/{word}";
+
+            var jsonString = await SendHttpGetRequest(searchPath, ct);
+
+            if (jsonString == null)
+            {
+                // null if not found
+                return null;
+            }
+
+            return JsonConvert.DeserializeObject<SearchResult>(jsonString);
+        }
+
+        /// <summary>
+        /// Get available dictionaries in Oxforad Dictionary API, return null if not found
+        /// </summary>
+        /// <param name="sourceLanguage">IANA language code. If provided output will be filtered by sourceLanguage</param>
+        /// <param name="targetLanguage">IANA language code. If provided output will be filtered by targetLanguage</param>
+        /// <returns>List of OxfordDictionary</returns>
+        /// <exception cref="HttpRequestException">Throw when underlying HTTPClient throw exception other than 404 HTTP error</exception>
+        public async Task<List<OxfordDictionary>> GetAvailableDictionaries(CancellationToken ct, string sourceLanguage = null, string targetLanguage = null)
+        {
+            var path = "languages";
+
+            if (!string.IsNullOrWhiteSpace(sourceLanguage) && string.IsNullOrWhiteSpace(targetLanguage))
+            {
+                path += $"?sourceLanguage={sourceLanguage}";
+            }
+            else if (string.IsNullOrWhiteSpace(sourceLanguage) && !string.IsNullOrWhiteSpace(targetLanguage))
+            {
+                path += $"?targetLanguage={targetLanguage}";
+            }
+            else if (!string.IsNullOrWhiteSpace(sourceLanguage) && !string.IsNullOrWhiteSpace(targetLanguage))
+            {
+                path += $"?sourceLanguage={sourceLanguage}&targetLanguage={targetLanguage}";
+            }
+
+            string jsonString = await SendHttpGetRequest(path, ct);
+
+            if (jsonString == null)
+            {
+                // null if not found
+                return null;
+            }
+
+            return JsonConvert.DeserializeObject<List<OxfordDictionary>>(jsonString, new OxfordDictionaryConverter());
+        }
+
+        private async Task<string> SendHttpGetRequest(string path, CancellationToken ct)
+        {
             HttpResponseMessage responseMsg = null;
 
             try
             {
-                responseMsg = await _httpClient.GetAsync(searchPath, ct);
+                responseMsg = await _httpClient.GetAsync(path, ct);
 
                 if (responseMsg.IsSuccessStatusCode)
                 {
-                    var jsonString = await responseMsg.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<SearchResult>(jsonString);
+
+                    return await responseMsg.Content.ReadAsStringAsync();
                 }
                 else
                 {

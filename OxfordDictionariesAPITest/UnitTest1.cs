@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using Xunit;
+using FluentAssertions;
 using OxfordDictionariesAPI;
 using OxfordDictionariesAPI.Models;
 
@@ -38,6 +39,39 @@ namespace OxfordDictionariesAPITest
         {
             var searchResult = _client.SearchEntries("liewsdg", CancellationToken.None).Result;
             Assert.True(searchResult == null);
+        }
+
+        [Fact]
+        public void TestAvailableDictionaries()
+        {
+            var dictionaries = _client.GetAvailableDictionaries(CancellationToken.None).Result;
+            Assert.NotNull(dictionaries);
+
+            // First in list, only source language
+            var actual1 = dictionaries.First();
+
+            var expected1 = new OxfordDictionary
+            {
+                Region = "gb",
+                Source = "Oxford Dictionary of English 3e",
+                SourceLanguage = "en",
+                Type = DictionaryType.Monolingual
+            };
+
+            actual1.Should().BeEquivalentTo(expected1);
+
+            // 7th in list, bilingual
+            var actual2 = dictionaries[6];
+
+            var expected2 = new OxfordDictionary
+            {
+                Source = "Oxford Spanish Dictionary 5e",
+                SourceLanguage = "en",
+                TargetLanguage = "es",
+                Type = DictionaryType.Bilingual
+            };
+
+            actual2.Should().BeEquivalentTo(expected2);
         }
     }
 }
