@@ -20,10 +20,10 @@ namespace OxfordDictionariesAPI.Models
         public string Text { get; set; }
     }
 
-    public class Subsens
+    public class Subsense
     {
         public string[] Definitions { get; set; }
-        public Example[] Examples { get; set; }
+        public string[] Examples { get; set; }
         public string Id { get; set; }
         public string[] Domains { get; set; }
         public string[] Regions { get; set; }
@@ -34,9 +34,9 @@ namespace OxfordDictionariesAPI.Models
     {
         public string[] Definitions { get; set; }
         public string[] Domains { get; set; }
-        public Example[] Examples { get; set; }
+        public string[] Examples { get; set; }
         public string Id { get; set; }
-        public Subsens[] Subsenses { get; set; }
+        public Subsense[] Subsenses { get; set; }
         public string[] Registers { get; set; }
     }
 
