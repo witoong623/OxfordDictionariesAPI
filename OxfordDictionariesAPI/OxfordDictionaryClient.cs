@@ -23,7 +23,7 @@ namespace OxfordDictionariesAPI
         {
             _httpClient = new HttpClient();
             _httpClient.DefaultRequestHeaders.Accept.Clear();
-            _httpClient.BaseAddress = new Uri(@"https://od-api.oxforddictionaries.com/api/v1/");
+            _httpClient.BaseAddress = new Uri(@"https://od-api.oxforddictionaries.com/api/v2/");
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             _httpClient.DefaultRequestHeaders.Add("app_id", app_id);
             _httpClient.DefaultRequestHeaders.Add("app_key", app_key);
@@ -38,7 +38,7 @@ namespace OxfordDictionariesAPI
         /// <param name="language">Abbreviated name of language, must be lowercase</param>
         /// <returns>SearchResult of a given word. Return null if not found</returns>
         /// <exception cref="HttpRequestException">Throw when underlying HTTPClient throw exception other than 404 HTTP error</exception>
-        public async Task<SearchResult> SearchEntries(string word, CancellationToken ct, string language = "en")
+        public async Task<SearchResult> SearchEntries(string word, CancellationToken ct, string language = "en-gb")
         {
             if (string.IsNullOrWhiteSpace(word))
                 throw new ArgumentNullException(nameof(word));
@@ -54,7 +54,7 @@ namespace OxfordDictionariesAPI
                 return null;
             }
 
-            return JsonConvert.DeserializeObject<SearchResult>(jsonString);
+            return JsonConvert.DeserializeObject<SearchResult>(jsonString, new EntriesConverter());
         }
 
         /// <summary>
@@ -64,6 +64,7 @@ namespace OxfordDictionariesAPI
         /// <param name="targetLanguage">IANA language code. If provided output will be filtered by targetLanguage</param>
         /// <returns>List of OxfordDictionary</returns>
         /// <exception cref="HttpRequestException">Throw when underlying HTTPClient throw exception other than 404 HTTP error</exception>
+        [Obsolete]
         public async Task<List<OxfordDictionary>> GetAvailableDictionaries(CancellationToken ct, string sourceLanguage = null, string targetLanguage = null)
         {
             var path = "languages";
