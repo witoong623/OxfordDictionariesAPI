@@ -6,6 +6,10 @@
     <Description>Unofficial Oxford Dictionaries API in .NET.</Description>
     <Company />
     <Product>OxfordDictionariesAPI</Product>
+    <Version>2.0.0</Version>
+    <PackageReleaseNotes>Update oxford dictionary API to v2 with some breaking change as follows
+- Example type was remove to replace with string
+- Subsen class was rename to Subsense</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
